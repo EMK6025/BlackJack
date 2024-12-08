@@ -89,11 +89,14 @@ public class AllActions implements MouseListener{
         }
 
         // Dealer draws until total >=17
+        /**
+         * fix delay
+         */
         while (computeHandSum(dealerCards) < 17) {
           appendCard(dealerCards);
           evaluateHand(dealerCards);
           try {
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(200);
           } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
           }
@@ -165,6 +168,9 @@ public class AllActions implements MouseListener{
     mainFrame.setVisible(true);
 
     // Initial checks for blackjack or bust scenarios
+    /**
+     * fix delay animation
+     */
     appendCard(dealerCards);
     cardDisplay.repaint();
     TimeUnit.MILLISECONDS.sleep(200);

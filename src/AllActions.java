@@ -50,19 +50,31 @@ public class AllActions implements MouseListener{
 
     buttonHit.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+
+        if (OrderFlow.currentBet == 0){
+          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+          return;
+        }
+
         appendCard(playerCards);
         evaluateHand(playerCards);
-        mainFrame.repaint();
+        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
       }
 
     });
 
     buttonDouble.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+
+        if (OrderFlow.currentBet == 0){
+          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+          return;
+        }
+
         appendCard(playerCards);
         // double bet
         evaluateHand(playerCards);
-        mainFrame.repaint();
+        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
         // Simulate a stand after doubling down
         buttonStand.doClick();
       }
@@ -70,12 +82,18 @@ public class AllActions implements MouseListener{
 
     buttonStand.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+
+        if (OrderFlow.currentBet == 0){
+          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+          return;
+        }
+
         // Dealer draws until total >=17
         while (computeHandSum(dealerCards) < 17) {
           appendCard(dealerCards);
           evaluateHand(dealerCards);
           try {
-            TimeUnit.SECONDS.sleep(1);
+            TimeUnit.MILLISECONDS.sleep(500);
           } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
           }
@@ -137,14 +155,9 @@ public class AllActions implements MouseListener{
     mainFrame.setVisible(true);
   }
 
-  public void initiateGame() {
+  public void initiateGame() throws InterruptedException {
     // Initial dealing: first two cards to dealer, next two cards to player
     cardFaceDown = true;
-    appendCard(dealerCards);
-    appendCard(playerCards);
-    appendCard(dealerCards);
-    appendCard(playerCards);
-
     // Add component for card visuals
     cardDisplay = new Display(dealerCards, playerCards);
     cardDisplay.setBounds(0, 0, 1130, 665);
@@ -152,6 +165,19 @@ public class AllActions implements MouseListener{
     mainFrame.setVisible(true);
 
     // Initial checks for blackjack or bust scenarios
+    appendCard(dealerCards);
+    cardDisplay.repaint();
+    TimeUnit.MILLISECONDS.sleep(200);
+    appendCard(playerCards);
+    cardDisplay.repaint();
+    TimeUnit.MILLISECONDS.sleep(200);
+    appendCard(dealerCards);
+    cardDisplay.repaint();
+    TimeUnit.MILLISECONDS.sleep(200);
+    appendCard(playerCards);
+    cardDisplay.repaint();
+    TimeUnit.MILLISECONDS.sleep(200);
+
     evaluateHand(dealerCards);
     evaluateHand(playerCards);
   }
@@ -250,7 +276,11 @@ public class AllActions implements MouseListener{
       int val = Integer.parseInt(betOptions[choice]);
       OrderFlow.currentBet = val;
       OrderFlow.currentBalance -= val;
-      OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
+        try {
+            OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
   }
 

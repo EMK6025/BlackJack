@@ -7,7 +7,7 @@ public class OrderFlow {
 
   private static int playerScore = 0;
   private static int dealerScore = 0;
-  public static int currentBet;
+  public static int currentBet = 0;
   public static int currentBalance = 1000;
 
   public static AllActions newGame = new AllActions(gameFrame); // Controls the blackjack game
@@ -49,6 +49,7 @@ public class OrderFlow {
       // Push
       currentBalance += currentBet;
     }
+    currentBet = 0;
     newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, AllActions.cardFaceDown);
     gameFrame.getContentPane().removeAll();
     newGame = new AllActions(gameFrame);

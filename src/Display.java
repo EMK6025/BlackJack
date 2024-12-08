@@ -7,8 +7,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 import java.io.*;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 public class Display extends JComponent implements MouseListener {
 
@@ -25,7 +23,6 @@ public class Display extends JComponent implements MouseListener {
   private int dealerWinsCount;
   private int playerWinsCount;
 
-  // Flags and player info
   public boolean cardHidden = true;
   public static boolean wagerPlaced = false;
   private int playerBalance;
@@ -143,7 +140,7 @@ public class Display extends JComponent implements MouseListener {
       playerBet = val;
       playerBalance -= val;
       this.repaint();
-      Runner.newGame.initiateGame(); // Begin the round after placing a bet
+      OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
     }
   }
 

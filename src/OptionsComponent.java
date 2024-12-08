@@ -73,9 +73,9 @@ public class OptionsComponent extends JComponent implements ActionListener {
       System.exit(0);
     } else if (triggered == playButton) {
       // Play button: transition from menu to the game state
-      Runner.currentState = Runner.STATE.GAME;
-      Runner.menuFrame.dispose();
-      Runner.gameCheckThread.start();
+      OrderFlow.currentState = OrderFlow.STATE.GAME;
+      OrderFlow.menuFrame.dispose();
+      OrderFlow.gameReset();
       // playBackgroundAmbience(); // Could be re-enabled if desired
     } else if (triggered == helpButton) {
       // Display help info in a dialog box
@@ -99,20 +99,6 @@ public class OptionsComponent extends JComponent implements ActionListener {
               "INFORMATION",
               JOptionPane.INFORMATION_MESSAGE
       );
-    }
-  }
-
-  /**
-   * Plays a background ambience sound when needed.
-   */
-  public static void playBackgroundAmbience() {
-    try {
-      InputStream in = new FileInputStream("sounds/casinoAmbience.wav");
-      // Original audio handling code commented out
-      // AudioStream audio = new AudioStream(in);
-      // AudioPlayer.player.start(audio);
-    } catch (IOException e) {
-      // If unable to play sound, no special action
     }
   }
 }

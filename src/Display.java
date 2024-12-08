@@ -61,11 +61,6 @@ public class Display extends JComponent{
     g2.drawString(Integer.toString(playerWinsCount), 300, 150);
 
     g2.setFont(new Font("Montserrat", Font.BOLD, 15));
-    g2.drawString("To begin a round, click the chip below to place a bet.", 50, 250);
-    g2.drawString("Experience is best with sound enabled!", 50, 270);
-
-    g2.drawString("The best gaming experience is when", 830, 550);
-    g2.drawString("you play with sound on!", 830, 570);
 
     g2.setFont(new Font("Montserrat", Font.BOLD, 20));
     g2.drawString("CURRENT BALANCE: " + OrderFlow.currentBalance, 50, 570);
@@ -75,7 +70,7 @@ public class Display extends JComponent{
       for (int i = 0; i < AllActions.dealerCards.size(); i++) {
         if (i == 0 && cardHidden) {
           // The dealer's first card can be hidden if conditions apply
-          AllActions.dealerCards.get(i).renderCard(g2, true, true, i);
+          AllActions.dealerCards.get(i).renderCard(g2, true, false, i);
         } else {
           AllActions.dealerCards.get(i).renderCard(g2, true, false, i);
         }

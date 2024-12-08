@@ -4,124 +4,125 @@ import javax.swing.*;
 import java.awt.Font;
 import java.util.concurrent.TimeUnit;
 
-public class AllActions implements MouseListener{
+public class AllActions implements MouseListener {
 
-  // Collections representing dealer's and player's hands
   public static ArrayList<Card> dealerCards;
   public static ArrayList<Card> playerCards;
-  // Control flags indicating states in the game
   public static boolean cardFaceDown;
   public int outcome;
   public static boolean wagerPlaced = false;
-  // Swing components and game objects
+
   JFrame mainFrame;
   Deck cardDeck;
   Display primaryVisuals;
   Display cardDisplay;
 
-  // UI Buttons
   public JButton buttonHit;
   public JButton buttonStand;
   public JButton buttonDouble;
   public JButton buttonExit;
 
+  // This will store which cards to deal and in what order
+  private ArrayList<ArrayList<Card>> dealingSequence;
+
   public AllActions(JFrame frame) {
     cardDeck = new Deck();
-    cardDeck.mixDeck();  // Shuffle the deck at the start
+    cardDeck.mixDeck();
     dealerCards = new ArrayList<Card>();
     playerCards = new ArrayList<Card>();
+
     buttonHit = new JButton("HIT");
     buttonStand = new JButton("STAND");
     buttonDouble = new JButton("DOUBLE");
     buttonExit = new JButton("EXIT CASINO");
+
     primaryVisuals = new Display();
     mainFrame = frame;
 
     cardFaceDown = true;
     outcome = 1;
 
-    // Button listeners
-    buttonExit.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        JOptionPane.showMessageDialog(mainFrame, "You have left the casino with " + OrderFlow.currentBalance + ".");
-        System.exit(0);
-      }
+    buttonExit.addActionListener(e -> {
+      JOptionPane.showMessageDialog(mainFrame, "You have left the casino with " + OrderFlow.currentBalance + ".");
+      System.exit(0);
     });
 
-    buttonHit.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-
-        if (OrderFlow.currentBet == 0){
-          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
-          return;
-        }
-
-        appendCard(playerCards);
-        evaluateHand(playerCards);
-        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
+    buttonHit.addActionListener(e -> {
+      if (OrderFlow.currentBet == 0) {
+        JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+        return;
       }
-
+      appendCard(playerCards);
+      evaluateHand(playerCards);
+      primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
     });
 
-    buttonDouble.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-
-        if (OrderFlow.currentBet == 0){
-          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
-          return;
-        }
-
-        appendCard(playerCards);
-        // double bet
-        evaluateHand(playerCards);
-        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
-        // Simulate a stand after doubling down
-        buttonStand.doClick();
+    buttonDouble.addActionListener(e -> {
+      if (OrderFlow.currentBet == 0) {
+        JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+        return;
       }
+
+      appendCard(playerCards);
+      // double bet logic here if needed
+      evaluateHand(playerCards);
+      primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
+      // Simulate a stand after doubling down
+      buttonStand.doClick();
     });
 
-    buttonStand.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
+    buttonStand.addActionListener(e -> {
+      if (OrderFlow.currentBet == 0) {
+        JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
+        return;
+      }
 
-        if (OrderFlow.currentBet == 0){
-          JOptionPane.showMessageDialog(mainFrame, "PLACE A BET FIRST!");
-          return;
-        }
+      // Keep the card faceDown until the dealer finishes drawing
+      cardFaceDown = true;
 
-        // Dealer draws until total >=17
-        /**
-         * fix delay
-         */
-        primaryVisuals.repaint();
-        while (computeHandSum(dealerCards) < 17) {
-          appendCard(dealerCards);
-          evaluateHand(dealerCards);
-          try {
-            TimeUnit.MILLISECONDS.sleep(200);
-          } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-          }
-          primaryVisuals.repaint();
-        }
-        // Determine winner if no bust and no blackjack
-        if ((computeHandSum(dealerCards) < 21) && (computeHandSum(playerCards) < 21)) {
-          if (computeHandSum(playerCards) > computeHandSum(dealerCards)) {
-            cardFaceDown = false;
-            outcome = 0;
-            JOptionPane.showMessageDialog(mainFrame, "PLAYER HAS WON BECAUSE OF A BETTER HAND!");
-            OrderFlow.gameReset();
-          } else if (computeHandSum(playerCards) == computeHandSum(dealerCards)) {
-            cardFaceDown = false;
-            outcome = 2;
-            JOptionPane.showMessageDialog(mainFrame, "PUSH! Both the dealer and player have the same hand!");
-            OrderFlow.gameReset();
+      // Use a timer to deal dealer cards with a delay
+      Timer dealerDrawTimer = new Timer(1000, null);
+      dealerDrawTimer.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+          if (computeHandSum(dealerCards) < 17) {
+            appendCard(dealerCards);
+            evaluateHand(dealerCards);
+            primaryVisuals.repaint();
           } else {
+            dealerDrawTimer.stop();
+
+            // All dealer cards drawn, now determine winner
+            int dealerSum = computeHandSum(dealerCards);
+            int playerSum = computeHandSum(playerCards);
+
+            // Reveal dealer's facedown card
             cardFaceDown = false;
-            JOptionPane.showMessageDialog(mainFrame, "DEALER HAS WON BECAUSE OF A BETTER HAND!");
+            // Update the display to show the revealed dealer card before showing the result
+            primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount, cardFaceDown);
+            primaryVisuals.repaint();
+
+            // Determine the outcome after revealing the card
+            if ((dealerSum < 21) && (playerSum < 21)) {
+              if (playerSum > dealerSum) {
+                outcome = 0;
+                JOptionPane.showMessageDialog(mainFrame, "PLAYER HAS WON BECAUSE OF A BETTER HAND!");
+              } else if (playerSum == dealerSum) {
+                outcome = 2;
+                JOptionPane.showMessageDialog(mainFrame, "PUSH! Both have the same hand!");
+              } else {
+                JOptionPane.showMessageDialog(mainFrame, "DEALER HAS WON BECAUSE OF A BETTER HAND!");
+              }
+            }
+            // If dealerSum > 21 or playerSum > 21, those cases are handled in evaluateHand().
+
+            // Finally, reset the game after showing the final state
             OrderFlow.gameReset();
           }
         }
-      }
+      });
+      dealerDrawTimer.setInitialDelay(0);
+      dealerDrawTimer.start();
     });
   }
 
@@ -133,18 +134,18 @@ public class AllActions implements MouseListener{
     mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     mainFrame.setResizable(false);
 
-    // Create and style buttons
+    // Adjust button styling as needed
     buttonHit.setBounds(390, 550, 100, 50);
-    buttonHit.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+    buttonHit.setFont(new Font("SansSerif", Font.BOLD, 16));
 
     buttonStand.setBounds(520, 550, 100, 50);
-    buttonStand.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+    buttonStand.setFont(new Font("SansSerif", Font.BOLD, 16));
 
     buttonDouble.setBounds(650, 550, 100, 50);
-    buttonDouble.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+    buttonDouble.setFont(new Font("SansSerif", Font.BOLD, 16));
 
     buttonExit.setBounds(930, 240, 190, 50);
-    buttonExit.setFont(new Font("Comic Sans MS", Font.BOLD, 16));
+    buttonExit.setFont(new Font("SansSerif", Font.BOLD, 16));
 
     // Add buttons to the frame
     mainFrame.add(buttonHit);
@@ -152,41 +153,49 @@ public class AllActions implements MouseListener{
     mainFrame.add(buttonDouble);
     mainFrame.add(buttonExit);
 
-    // Add the general visual component that sets up the atmosphere
     primaryVisuals = new Display();
     primaryVisuals.setBounds(0, 0, 1130, 665);
     mainFrame.add(primaryVisuals);
     mainFrame.setVisible(true);
   }
 
-  public void initiateGame() throws InterruptedException {
-    // Initial dealing: first two cards to dealer, next two cards to player
+  public void initiateGame() {
     cardFaceDown = true;
-    // Add component for card visuals
     cardDisplay = new Display(dealerCards, playerCards);
     cardDisplay.setBounds(0, 0, 1130, 665);
     mainFrame.add(cardDisplay);
     mainFrame.setVisible(true);
 
-    // Initial checks for blackjack or bust scenarios
-    /**
-     * fix delay animation
-     */
-    appendCard(dealerCards);
-    primaryVisuals.repaint();
-    TimeUnit.MILLISECONDS.sleep(2000);
-    appendCard(playerCards);
-    primaryVisuals.repaint();
-    TimeUnit.MILLISECONDS.sleep(2000);
-    appendCard(dealerCards);
-    primaryVisuals.repaint();
-    TimeUnit.MILLISECONDS.sleep(2000);
-    appendCard(playerCards);
-    primaryVisuals.repaint();
-    TimeUnit.MILLISECONDS.sleep(2000);
+    // Set up a sequence of deals: dealer, player, dealer, player
+    dealerCards.clear();
+    playerCards.clear();
 
-    evaluateHand(dealerCards);
-    evaluateHand(playerCards);
+    // Use a timer to deal the initial four cards one by one
+    ArrayList<Runnable> dealSteps = new ArrayList<>();
+    dealSteps.add(() -> appendCard(dealerCards));
+    dealSteps.add(() -> appendCard(playerCards));
+    dealSteps.add(() -> appendCard(dealerCards));
+    dealSteps.add(() -> appendCard(playerCards));
+
+    Timer dealTimer = new Timer(1000, null);
+    dealTimer.addActionListener(new ActionListener() {
+      int stepIndex = 0;
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        if (stepIndex < dealSteps.size()) {
+          dealSteps.get(stepIndex).run();
+          primaryVisuals.repaint();
+          stepIndex++;
+        } else {
+          dealTimer.stop();
+          // After dealing all four cards, evaluate hands
+          evaluateHand(dealerCards);
+          evaluateHand(playerCards);
+        }
+      }
+    });
+    dealTimer.setInitialDelay(0);
+    dealTimer.start();
   }
 
   public void evaluateHand(ArrayList<Card> hand) {
@@ -213,9 +222,7 @@ public class AllActions implements MouseListener{
 
   public boolean aceInSet(ArrayList<Card> hand) {
     for (Card c : hand) {
-      if (c.getValue() == 11) {
-        return true;
-      }
+      if (c.getValue() == 11) return true;
     }
     return false;
   }
@@ -257,14 +264,14 @@ public class AllActions implements MouseListener{
       }
       return simpleSum;
     }
-    return 22; // If no other return was valid, it's a bust scenario
+    return 22; // bust scenario
   }
 
+  @Override
   public void mousePressed(MouseEvent e) {
     int clickX = e.getX();
     int clickY = e.getY();
 
-    // Check if click coordinates are within the chip's area
     if (clickX >= 50 && clickX <= 200 && clickY >= 300 && clickY <= 450) {
       wagerPlaced = true;
       String[] betOptions = {"1", "5", "10", "25", "100"};
@@ -279,21 +286,20 @@ public class AllActions implements MouseListener{
               betOptions[0]
       );
 
-      // Assign bets according to user's choice or default to 1 if no choice is made
       int val = Integer.parseInt(betOptions[choice]);
       OrderFlow.currentBet = val;
       OrderFlow.currentBalance -= val;
-        try {
-            OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
-        } catch (InterruptedException ex) {
-            throw new RuntimeException(ex);
-        }
+      try {
+        OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
     }
   }
 
-  // The following MouseListener methods are unused but must be included
-  public void mouseExited(MouseEvent e) {}
-  public void mouseEntered(MouseEvent e) {}
-  public void mouseReleased(MouseEvent e) {}
-  public void mouseClicked(MouseEvent e) {}
+  // Unused MouseListener methods
+  @Override public void mouseExited(MouseEvent e) {}
+  @Override public void mouseEntered(MouseEvent e) {}
+  @Override public void mouseReleased(MouseEvent e) {}
+  @Override public void mouseClicked(MouseEvent e) {}
 }

@@ -92,6 +92,7 @@ public class AllActions implements MouseListener{
         /**
          * fix delay
          */
+        primaryVisuals.repaint();
         while (computeHandSum(dealerCards) < 17) {
           appendCard(dealerCards);
           evaluateHand(dealerCards);
@@ -100,7 +101,7 @@ public class AllActions implements MouseListener{
           } catch (InterruptedException ex) {
             throw new RuntimeException(ex);
           }
-          primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
+          primaryVisuals.repaint();
         }
         // Determine winner if no bust and no blackjack
         if ((computeHandSum(dealerCards) < 21) && (computeHandSum(playerCards) < 21)) {
@@ -172,17 +173,17 @@ public class AllActions implements MouseListener{
      * fix delay animation
      */
     appendCard(dealerCards);
-    cardDisplay.repaint();
-    TimeUnit.MILLISECONDS.sleep(200);
+    primaryVisuals.repaint();
+    TimeUnit.MILLISECONDS.sleep(2000);
     appendCard(playerCards);
-    cardDisplay.repaint();
-    TimeUnit.MILLISECONDS.sleep(200);
+    primaryVisuals.repaint();
+    TimeUnit.MILLISECONDS.sleep(2000);
     appendCard(dealerCards);
-    cardDisplay.repaint();
-    TimeUnit.MILLISECONDS.sleep(200);
+    primaryVisuals.repaint();
+    TimeUnit.MILLISECONDS.sleep(2000);
     appendCard(playerCards);
-    cardDisplay.repaint();
-    TimeUnit.MILLISECONDS.sleep(200);
+    primaryVisuals.repaint();
+    TimeUnit.MILLISECONDS.sleep(2000);
 
     evaluateHand(dealerCards);
     evaluateHand(playerCards);

@@ -87,11 +87,6 @@ public class Display extends JComponent implements MouseListener {
     g2.setFont(new Font("Montserrat", Font.BOLD, 20));
     g2.drawString("CURRENT BALANCE: " + playerBalance, 50, 570);
 
-    // Show the current time in HH:mm:ss format at the top-right corner
-    Calendar cal = Calendar.getInstance();
-    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
-    g2.drawString(timeFormat.format(cal.getTime()), 1020, 20);
-
     // Render the dealer's cards
     try {
       for (int i = 0; i < dealerCards.size(); i++) {
@@ -116,13 +111,6 @@ public class Display extends JComponent implements MouseListener {
     }
   }
 
-  /**
-   * Update and redraw the component with new status info.
-   * @param balance Updated player balance.
-   * @param playerWins Updated player win count.
-   * @param dealerWins Updated dealer win count.
-   * @param hideDealerCard Whether the dealer's first card is hidden or not.
-   */
   public void updateDisplay(int balance, int playerWins, int dealerWins, boolean hideDealerCard) {
     playerBalance = balance;
     playerWinsCount = playerWins;
@@ -131,9 +119,6 @@ public class Display extends JComponent implements MouseListener {
     this.repaint();
   }
 
-  /**
-   * Handle mouse presses (e.g., when the player clicks the chip to place a bet).
-   */
   public void mousePressed(MouseEvent e) {
     int clickX = e.getX();
     int clickY = e.getY();
@@ -154,8 +139,9 @@ public class Display extends JComponent implements MouseListener {
       );
 
       // Assign bets according to user's choice or default to 1 if no choice is made
-      playerBet = choice;
-      playerBalance -= choice;
+      int val = Integer.parseInt(betOptions[choice]);
+      playerBet = val;
+      playerBalance -= val;
       this.repaint();
       Runner.newGame.initiateGame(); // Begin the round after placing a bet
     }

@@ -11,7 +11,7 @@ public class OrderFlow {
 
   // Control flags indicating states in the game
   public boolean cardFaceDown;
-  public boolean dealerVictory;
+  public int outcome;
   public boolean matchEnded;
 
   // Swing components and game objects
@@ -41,7 +41,7 @@ public class OrderFlow {
     mainFrame = frame;
 
     cardFaceDown = true;
-    dealerVictory = true;
+    outcome = 1;
     matchEnded = false;
   }
 
@@ -151,12 +151,12 @@ public class OrderFlow {
         if ((computeHandSum(dealerSet) < 21) && (computeHandSum(playerSet) < 21)) {
           if (computeHandSum(playerSet) > computeHandSum(dealerSet)) {
             cardFaceDown = false;
-            dealerVictory = false;
+            outcome = 0;
             JOptionPane.showMessageDialog(mainFrame, "PLAYER HAS WON BECAUSE OF A BETTER HAND!");
             matchEnded = true;
           } else if (computeHandSum(playerSet) == computeHandSum(dealerSet)) {
             cardFaceDown = false;
-            dealerVictory = false;
+            outcome = 2;
             JOptionPane.showMessageDialog(mainFrame, "PUSH! Both the dealer and player have the same hand!");
             matchEnded = true;
           } else {
@@ -174,41 +174,26 @@ public class OrderFlow {
    */
   public void evaluateHand(ArrayList<Card> hand) {
     if (hand.equals(playerSet)) {
-      if (computeHandSum(hand) == 21) {
-        cardFaceDown = false;
-        dealerVictory = false;
-        JOptionPane.showMessageDialog(mainFrame, "PLAYER BLACKJACK! PLAYER WINS!");
-        matchEnded = true;
-      } else if (computeHandSum(hand) > 21) {
+      if (computeHandSum(hand) > 21) {
         cardFaceDown = false;
         JOptionPane.showMessageDialog(mainFrame, "PLAYER BUSTED! DEALER WINS!");
         matchEnded = true;
       }
     } else {
-      if (computeHandSum(hand) == 21) {
+      if (computeHandSum(hand) > 21) {
         cardFaceDown = false;
-        JOptionPane.showMessageDialog(mainFrame, "DEALER BLACKJACK! DEALER WINS!");
-        matchEnded = true;
-      } else if (computeHandSum(hand) > 21) {
-        cardFaceDown = false;
-        dealerVictory = false;
+        outcome = 0;
         JOptionPane.showMessageDialog(mainFrame, "DEALER BUSTED! PLAYER WINS!");
         matchEnded = true;
       }
     }
   }
 
-  /**
-   * Append a new card from the deck to the specified hand.
-   */
   public void appendCard(ArrayList<Card> hand) {
     hand.add(cardDeck.fetchCard(0));
     cardDeck.extractCard(0);
   }
 
-  /**
-   * Check if the given hand contains any ace valued as 11.
-   */
   public boolean aceInSet(ArrayList<Card> hand) {
     for (Card c : hand) {
       if (c.getValue() == 11) {
@@ -218,9 +203,6 @@ public class OrderFlow {
     return false;
   }
 
-  /**
-   * Count how many aces (value=11) are present in the given hand.
-   */
   public int countAces(ArrayList<Card> hand) {
     int aceTotal = 0;
     for (Card c : hand) {
@@ -231,9 +213,6 @@ public class OrderFlow {
     return aceTotal;
   }
 
-  /**
-   * Compute the sum of the hand's values, treating all aces as high (value=11).
-   */
   public int sumConsideringAcesHigh(ArrayList<Card> hand) {
     int total = 0;
     for (Card c : hand) {
@@ -242,9 +221,6 @@ public class OrderFlow {
     return total;
   }
 
-  /**
-   * Compute the best possible sum of the given hand under Blackjack rules.
-   */
   public int computeHandSum(ArrayList<Card> hand) {
     if (aceInSet(hand)) {
       if (sumConsideringAcesHigh(hand) <= 21) {

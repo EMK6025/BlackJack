@@ -29,30 +29,14 @@ public class Deck {
     }
   }
 
-  /**
-   * Randomize the order of all cards in this deck.
-   */
   public void mixDeck() {
     Collections.shuffle(cardPile);
   }
 
-  /**
-   * Retrieve a card at a given position without removing it.
-   *
-   * @param position The index of the card to retrieve.
-   * @return The requested Card object.
-   */
   public Card fetchCard(int position) {
     return cardPile.get(position);
   }
 
-  /**
-   * Remove and return a card at a given position in the deck.
-   *
-   * @param position The index of the card to remove.
-   * @return The Card that was removed from the deck.
-   */
-  public Card extractCard(int position) {
-    return cardPile.remove(position);
+  public void extractCard(int position) { cardPile.remove(position);
   }
 }

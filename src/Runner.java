@@ -40,19 +40,17 @@ public class Runner {
   public static Thread gameCheckThread = new Thread() {
     public void run() {
       while (true) {
-        newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, newGame.cardFaceDown);
         if (isFirstTime || newGame.matchEnded) {
           System.out.println("Lets refresh the game!");
           if (newGame.dealerVictory) {
             // Dealer wins
             dealerScore++;
-            currentBalance -= Display.playerBet;
           } else {
             // Player wins
             playerScore++;
             currentBalance += Display.playerBet * 2;
           }
-
+          newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, newGame.cardFaceDown);
           gameFrame.getContentPane().removeAll();
           newGame = new OrderFlow(gameFrame);
           newGame.buildGameInterface(); // Updated from formGame() to buildGameInterface()

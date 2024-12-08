@@ -73,10 +73,9 @@ public class OptionsComponent extends JComponent implements ActionListener {
       System.exit(0);
     } else if (triggered == playButton) {
       // Play button: transition from menu to the game state
-      OrderFlow.currentState = OrderFlow.STATE.GAME;
-      OrderFlow.menuFrame.dispose();
-      OrderFlow.gameRefreshThread.start();
-      OrderFlow.gameCheckThread.start();
+      Runner.currentState = Runner.STATE.GAME;
+      Runner.menuFrame.dispose();
+      Runner.gameCheckThread.start();
       // playBackgroundAmbience(); // Could be re-enabled if desired
     } else if (triggered == helpButton) {
       // Display help info in a dialog box

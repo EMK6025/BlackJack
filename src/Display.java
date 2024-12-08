@@ -157,7 +157,7 @@ public class Display extends JComponent implements MouseListener {
       playerBet = choice;
       playerBalance -= choice;
       this.repaint();
-      OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
+      Runner.newGame.initiateGame(); // Begin the round after placing a bet
     }
   }
 

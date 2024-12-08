@@ -7,10 +7,10 @@ public class OrderFlow {
 
   private static int playerScore = 0;
   private static int dealerScore = 0;
+  public static int currentBet;
   public static int currentBalance = 1000;
 
   public static AllActions newGame = new AllActions(gameFrame); // Controls the blackjack game
-  private static boolean isFirstTime = true;
 
   public static enum STATE {
     MENU,
@@ -44,16 +44,15 @@ public class OrderFlow {
     } else if (newGame.outcome == 0) {
       // Player wins
       playerScore++;
-      currentBalance += Display.playerBet * 2;
+      currentBalance += currentBet * 2;
     } else {
       // Push
-      currentBalance += Display.playerBet;
+      currentBalance += currentBet;
     }
-    newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, newGame.cardFaceDown);
+    newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, AllActions.cardFaceDown);
     gameFrame.getContentPane().removeAll();
     newGame = new AllActions(gameFrame);
     newGame.buildGameInterface(); // Updated from formGame() to buildGameInterface()
 
-    isFirstTime = false;
   }
 }

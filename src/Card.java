@@ -6,13 +6,11 @@ import javax.imageio.ImageIO;
 
 public class Card {
   // Attributes describing the card's suit, rank, value, and position on the screen
-  private int cardSuit;   // 0: Clubs, 1: Diamonds, 2: Hearts, 3: Spades
-  private int cardRank;   // 0: Ace, 1: 2, 2: 3, ..., 9: 10, 10: Jack, 11: Queen, 12: King
-  private int cardValue;  // Blackjack value of the card (1 to 11)
-  private int posX;       // Horizontal coordinate for drawing the card
-  private int posY;       // Vertical coordinate for drawing the card
+  private final int cardSuit;   // 0: Clubs, 1: Diamonds, 2: Hearts, 3: Spades
+  private final int cardRank;   // 0: Ace, 1: 2, 2: 3, ..., 9: 10, 10: Jack, 11: Queen, 12: King
+  private final int cardValue;  // Blackjack value of the card (1 to 11)
 
-  // Default constructor initializes a meaningless card (used for initial setup)
+    // Default constructor initializes a meaningless card (used for initial setup)
   public Card() {
     cardSuit = 0;
     cardRank = 0;
@@ -68,9 +66,11 @@ public class Card {
     }
 
     // Decide vertical placement: dealer's cards appear at the top, player's cards at the bottom
-    posY = dealerTurn ? 75 : 400;
+      // Vertical coordinate for drawing the card
+      int posY = dealerTurn ? 75 : 400;
     // Horizontal placement: space each subsequent card horizontally
-    posX = 500 + 75 * cardIndex;
+      // Horizontal coordinate for drawing the card
+      int posX = 500 + 75 * cardIndex;
 
     // Draw either the card face or the back side, depending on the faceDown flag
     if (faceDown) {

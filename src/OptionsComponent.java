@@ -81,12 +81,12 @@ public class OptionsComponent extends JComponent implements ActionListener {
       // Display help info in a dialog box
       JOptionPane.showMessageDialog(
               this,
-              "The goal of blackjack is to beat the dealer's hand without going over 21.\n" +
+              "The goal of blackjack is to get your hand to as close to 21 as possible.\n" +
                       "Face cards are worth 10. Aces are worth 1 or 11, whichever is more advantageous.\n" +
                       "Each player starts with two cards; one of the dealer's cards is hidden until the end.\n" +
                       "To 'Hit' is to request another card. To 'Stand' is to end your turn.\n" +
                       "If you go over 21, you bust and lose immediately.\n" +
-                      "A starting 21 (Ace & 10-value card) is a blackjack.",
+                      "A starting 21 (Ace & 10-value card) is a natural blackjack.",
               "QUICK&EASY BLACKJACK HELP",
               JOptionPane.INFORMATION_MESSAGE
       );
@@ -94,8 +94,8 @@ public class OptionsComponent extends JComponent implements ActionListener {
       // Display info about the program
       JOptionPane.showMessageDialog(
               this,
-              "This project was completed as a final assignment for Advanced Programming\n" +
-                      "by Ongun Uzay Macar in January 2016 under the guidance of Cengiz Agalar.",
+              "This project is the semester project for CMPSC 221\n" +
+                      "by Ethan Kuo, Lakshay Kalra, and Chukwubikem David Dara.",
               "INFORMATION",
               JOptionPane.INFORMATION_MESSAGE
       );

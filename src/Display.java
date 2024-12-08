@@ -8,38 +8,24 @@ import java.awt.event.MouseListener;
 import javax.swing.JOptionPane;
 import java.io.*;
 
-public class Display extends JComponent implements MouseListener {
+public class Display extends JComponent{
 
   // Visual assets for the game layout
-  private BufferedImage tableImage;
-  private BufferedImage gameLogo;
-  private BufferedImage betChip;
-
-  // Data structures for the dealer's and player's card sets
-  private ArrayList<Card> dealerCards;
-  private ArrayList<Card> playerCards;
+  public BufferedImage tableImage;
+  public BufferedImage gameLogo;
+  public BufferedImage betChip;
 
   // Tracking how many times dealer and player have won
-  private int dealerWinsCount;
-  private int playerWinsCount;
+  public static int dealerWinsCount = 0;
+  public static int playerWinsCount = 0;
 
   public boolean cardHidden = true;
-  public static boolean wagerPlaced = false;
-  private int playerBalance;
-  public static int playerBet;
 
-  /**
-   * Constructor for the component that takes the dealer and player hands.
-   * @param dealerHand The dealer's card collection.
-   * @param playerHand The player's card collection.
-   */
-  public Display(ArrayList<Card> dealerHand, ArrayList<Card> playerHand) {
-    this.dealerCards = dealerHand;
-    this.playerCards = playerHand;
-    this.dealerWinsCount = 0;
-    this.playerWinsCount = 0;
-    this.playerBalance = 1000; // Starting funds
-    addMouseListener(this);
+  public Display() {
+    addMouseListener(OrderFlow.newGame);
+  }
+
+  public Display(ArrayList<Card> dealerSet, ArrayList<Card> playerSet) {
   }
 
   /**
@@ -82,16 +68,16 @@ public class Display extends JComponent implements MouseListener {
     g2.drawString("you play with sound on!", 830, 570);
 
     g2.setFont(new Font("Montserrat", Font.BOLD, 20));
-    g2.drawString("CURRENT BALANCE: " + playerBalance, 50, 570);
+    g2.drawString("CURRENT BALANCE: " + OrderFlow.currentBalance, 50, 570);
 
     // Render the dealer's cards
     try {
-      for (int i = 0; i < dealerCards.size(); i++) {
+      for (int i = 0; i < AllActions.dealerCards.size(); i++) {
         if (i == 0 && cardHidden) {
           // The dealer's first card can be hidden if conditions apply
-          dealerCards.get(i).renderCard(g2, true, true, i);
+          AllActions.dealerCards.get(i).renderCard(g2, true, true, i);
         } else {
-          dealerCards.get(i).renderCard(g2, true, false, i);
+          AllActions.dealerCards.get(i).renderCard(g2, true, false, i);
         }
       }
     } catch (IOException e) {
@@ -100,8 +86,8 @@ public class Display extends JComponent implements MouseListener {
 
     // Render the player's cards
     try {
-      for (int i = 0; i < playerCards.size(); i++) {
-        playerCards.get(i).renderCard(g2, false, false, i);
+      for (int i = 0; i < AllActions.playerCards.size(); i++) {
+        AllActions.playerCards.get(i).renderCard(g2, false, false, i);
       }
     } catch (IOException e) {
       // If there's an error drawing cards, do nothing special here
@@ -109,44 +95,10 @@ public class Display extends JComponent implements MouseListener {
   }
 
   public void updateDisplay(int balance, int playerWins, int dealerWins, boolean hideDealerCard) {
-    playerBalance = balance;
+    OrderFlow.currentBalance = balance;
     playerWinsCount = playerWins;
     dealerWinsCount = dealerWins;
     cardHidden = hideDealerCard;
     this.repaint();
   }
-
-  public void mousePressed(MouseEvent e) {
-    int clickX = e.getX();
-    int clickY = e.getY();
-
-    // Check if click coordinates are within the chip's area
-    if (clickX >= 50 && clickX <= 200 && clickY >= 300 && clickY <= 450) {
-      wagerPlaced = true;
-      String[] betOptions = {"1", "5", "10", "25", "100"};
-      int choice = JOptionPane.showOptionDialog(
-              null,
-              "Please enter your betting amount!",
-              "BETTING",
-              JOptionPane.DEFAULT_OPTION,
-              JOptionPane.PLAIN_MESSAGE,
-              null,
-              betOptions,
-              betOptions[0]
-      );
-
-      // Assign bets according to user's choice or default to 1 if no choice is made
-      int val = Integer.parseInt(betOptions[choice]);
-      playerBet = val;
-      playerBalance -= val;
-      this.repaint();
-      OrderFlow.newGame.initiateGame(); // Begin the round after placing a bet
-    }
-  }
-
-  // The following MouseListener methods are unused but must be included
-  public void mouseExited(MouseEvent e) {}
-  public void mouseEntered(MouseEvent e) {}
-  public void mouseReleased(MouseEvent e) {}
-  public void mouseClicked(MouseEvent e) {}
 }

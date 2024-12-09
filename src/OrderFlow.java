@@ -50,7 +50,7 @@ public class OrderFlow {
       currentBalance += currentBet;
     }
     currentBet = 0;
-    newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, AllActions.cardFaceDown);
+    newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, AllActions.cardHidden);
     gameFrame.getContentPane().removeAll();
     newGame = new AllActions(gameFrame);
     newGame.buildGameInterface(); // Updated from formGame() to buildGameInterface()

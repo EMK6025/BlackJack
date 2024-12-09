@@ -10,7 +10,7 @@ public class AllActions implements MouseListener{
   public static ArrayList<Card> dealerCards;
   public static ArrayList<Card> playerCards;
   // Control flags indicating states in the game
-  public static boolean cardFaceDown;
+  public static boolean cardHidden;
   public int outcome;
   public static boolean wagerPlaced = false;
   // Swing components and game objects
@@ -37,7 +37,7 @@ public class AllActions implements MouseListener{
     primaryVisuals = new Display();
     mainFrame = frame;
 
-    cardFaceDown = true;
+    cardHidden = true;
     outcome = 1;
 
     // Button listeners
@@ -58,7 +58,7 @@ public class AllActions implements MouseListener{
 
         appendCard(playerCards);
         evaluateHand(playerCards);
-        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
+        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount, cardHidden);
       }
 
     });
@@ -74,7 +74,7 @@ public class AllActions implements MouseListener{
         appendCard(playerCards);
         // double bet
         evaluateHand(playerCards);
-        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount - 1, cardFaceDown);
+        primaryVisuals.updateDisplay(OrderFlow.currentBalance, Display.playerWinsCount, Display.dealerWinsCount, cardHidden);
         // Simulate a stand after doubling down
         buttonStand.doClick();
       }
@@ -106,17 +106,20 @@ public class AllActions implements MouseListener{
         // Determine winner if no bust and no blackjack
         if ((computeHandSum(dealerCards) < 21) && (computeHandSum(playerCards) < 21)) {
           if (computeHandSum(playerCards) > computeHandSum(dealerCards)) {
-            cardFaceDown = false;
+            cardHidden = false;
+            primaryVisuals.repaint();
             outcome = 0;
             JOptionPane.showMessageDialog(mainFrame, "PLAYER HAS WON BECAUSE OF A BETTER HAND!");
             OrderFlow.gameReset();
           } else if (computeHandSum(playerCards) == computeHandSum(dealerCards)) {
-            cardFaceDown = false;
+            cardHidden = false;
+            primaryVisuals.repaint();
             outcome = 2;
             JOptionPane.showMessageDialog(mainFrame, "PUSH! Both the dealer and player have the same hand!");
             OrderFlow.gameReset();
           } else {
-            cardFaceDown = false;
+            cardHidden = false;
+            primaryVisuals.repaint();
             JOptionPane.showMessageDialog(mainFrame, "DEALER HAS WON BECAUSE OF A BETTER HAND!");
             OrderFlow.gameReset();
           }
@@ -161,7 +164,7 @@ public class AllActions implements MouseListener{
 
   public void initiateGame() throws InterruptedException {
     // Initial dealing: first two cards to dealer, next two cards to player
-    cardFaceDown = true;
+    cardHidden = true;
     // Add component for card visuals
     cardDisplay = new Display(dealerCards, playerCards);
     cardDisplay.setBounds(0, 0, 1130, 665);
@@ -169,9 +172,6 @@ public class AllActions implements MouseListener{
     mainFrame.setVisible(true);
 
     // Initial checks for blackjack or bust scenarios
-    /**
-     * fix delay animation
-     */
     appendCard(dealerCards);
     primaryVisuals.repaint();
     TimeUnit.MILLISECONDS.sleep(2000);
@@ -192,13 +192,15 @@ public class AllActions implements MouseListener{
   public void evaluateHand(ArrayList<Card> hand) {
     if (hand.equals(playerCards)) {
       if (computeHandSum(hand) > 21) {
-        cardFaceDown = false;
+        cardHidden = false;
+        primaryVisuals.repaint();
         JOptionPane.showMessageDialog(mainFrame, "PLAYER BUSTED! DEALER WINS!");
         OrderFlow.gameReset();
       }
     } else {
       if (computeHandSum(hand) > 21) {
-        cardFaceDown = false;
+        cardHidden = false;
+        primaryVisuals.repaint();
         outcome = 0;
         JOptionPane.showMessageDialog(mainFrame, "DEALER BUSTED! PLAYER WINS!");
         OrderFlow.gameReset();

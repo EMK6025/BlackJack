@@ -19,7 +19,6 @@ public class Display extends JComponent{
   public static int dealerWinsCount = 0;
   public static int playerWinsCount = 0;
 
-  public boolean cardHidden = true;
 
   public Display() {
     addMouseListener(OrderFlow.newGame);
@@ -73,7 +72,7 @@ public class Display extends JComponent{
     // Render the dealer's cards
     try {
       for (int i = 0; i < AllActions.dealerCards.size(); i++) {
-        if (i == 0 && cardHidden) {
+        if (i == 0 && AllActions.cardHidden) {
           // The dealer's first card can be hidden if conditions apply
           AllActions.dealerCards.get(i).renderCard(g2, true, true, i);
         } else {
@@ -98,7 +97,7 @@ public class Display extends JComponent{
     OrderFlow.currentBalance = balance;
     playerWinsCount = playerWins;
     dealerWinsCount = dealerWins;
-    cardHidden = hideDealerCard;
+    AllActions.cardHidden = hideDealerCard;
     this.repaint();
   }
 }

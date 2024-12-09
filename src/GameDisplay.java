@@ -1,36 +1,58 @@
-import javax.swing.JComponent;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.awt.*;
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.JOptionPane;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class Display extends JComponent{
+public class GameDisplay extends JComponent implements ActionListener, MouseListener {
 
   // Visual assets for the game layout
   public BufferedImage tableImage;
   public BufferedImage gameLogo;
   public BufferedImage betChip;
 
+  public JButton buttonHit = new JButton("HIT");
+  public JButton buttonStand = new JButton("STAND");
+  public JButton buttonDouble = new JButton("DOUBLE");
+  public JButton buttonExit = new JButton("EXIT CASINO");
+
+
   // Tracking how many times dealer and player have won
   public static int dealerWinsCount = 0;
   public static int playerWinsCount = 0;
+  public static boolean cardHidden = true;
+  public static int outcome;
 
-  public boolean cardHidden = true;
+  public GameDisplay() {
+    // Add and style the buttons
+    buttonHit.setBounds(390, 550, 100, 50);
+    buttonHit.setFont(new Font("SansSerif", Font.BOLD, 16));
 
-  public Display() {
-    addMouseListener(OrderFlow.newGame);
+    buttonStand.setBounds(520, 550, 100, 50);
+    buttonStand.setFont(new Font("SansSerif", Font.BOLD, 16));
+
+    buttonDouble.setBounds(650, 550, 100, 50);
+    buttonDouble.setFont(new Font("SansSerif", Font.BOLD, 16));
+
+    buttonExit.setBounds(930, 240, 190, 50);
+    buttonExit.setFont(new Font("SansSerif", Font.BOLD, 16));
+
+    buttonExit.addActionListener(this);
+    buttonHit.addActionListener(this);
+    buttonDouble.addActionListener(this);
+    buttonStand.addActionListener(this);
+    // Add buttons to the frame
+    add(buttonHit);
+    add(buttonStand);
+    add(buttonDouble);
+    add(buttonExit);
   }
 
-  public Display(ArrayList<Card> dealerSet, ArrayList<Card> playerSet) {
-  }
-
-  /**
-   * Rendering the entire visual state (background, logos, cards, etc.)
-   */
+  // Rendering the entire visual state (background, logos, cards, etc.)
   public void paintComponent(Graphics g) {
     Graphics2D g2 = (Graphics2D) g;
 
@@ -68,9 +90,9 @@ public class Display extends JComponent{
     // Render the dealer's cards
     try {
       for (int i = 0; i < AllActions.dealerCards.size(); i++) {
-        if (i == 0 && cardHidden) {
+        if (i == 0 && GameDisplay.cardHidden) {
           // The dealer's first card can be hidden if conditions apply
-          AllActions.dealerCards.get(i).renderCard(g2, true, false, i);
+          AllActions.dealerCards.get(i).renderCard(g2, true, true, i);
         } else {
           AllActions.dealerCards.get(i).renderCard(g2, true, false, i);
         }
@@ -88,12 +110,31 @@ public class Display extends JComponent{
       // If there's an error drawing cards, do nothing special here
     }
   }
-
-  public void updateDisplay(int balance, int playerWins, int dealerWins, boolean hideDealerCard) {
-    OrderFlow.currentBalance = balance;
-    playerWinsCount = playerWins;
-    dealerWinsCount = dealerWins;
-    cardHidden = hideDealerCard;
-    this.repaint();
+  public void actionPerformed(ActionEvent evt) {
+    JButton triggered = (JButton) evt.getSource();
+    if (triggered == buttonExit){
+      AllActions.exit();
+    }
+    else if (triggered == buttonHit){
+      AllActions.hit();
+    }
+    else if (triggered == buttonDouble){
+      AllActions.doubleDown();
+    }
+    else if (triggered == buttonStand){
+      AllActions.stand();
+    }
   }
+
+  @Override
+  public void mousePressed(MouseEvent e) { // make bet
+    int clickX = e.getX();
+    int clickY = e.getY();
+    AllActions.mousePressed(clickX, clickY);
+  }
+  // Unused MouseListener methods
+  @Override public void mouseExited(MouseEvent e) {}
+  @Override public void mouseEntered(MouseEvent e) {}
+  @Override public void mouseReleased(MouseEvent e) {}
+  @Override public void mouseClicked(MouseEvent e) {}
 }

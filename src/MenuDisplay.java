@@ -5,18 +5,18 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-public class OptionsComponent extends JComponent implements ActionListener {
+public class MenuDisplay extends JComponent implements ActionListener {
 
   // Four menu buttons: start game, exit, help, and info
-  private JButton playButton = new JButton("PLAY");
-  private JButton quitButton = new JButton("EXIT");
-  private JButton helpButton = new JButton("HELP");
-  private JButton infoButton = new JButton("INFO");
+  private final JButton playButton = new JButton("PLAY");
+  private final JButton quitButton = new JButton("EXIT");
+  private final JButton helpButton = new JButton("HELP");
+  private final JButton infoButton = new JButton("INFO");
 
   // Background image for the menu screen
   private static BufferedImage tableBackground;
 
-  public OptionsComponent() {
+  public MenuDisplay() {
     // Attach action listeners to menu buttons
     playButton.addActionListener(this);
     quitButton.addActionListener(this);
@@ -24,10 +24,10 @@ public class OptionsComponent extends JComponent implements ActionListener {
     infoButton.addActionListener(this);
 
     // Apply consistent styling to buttons
-    styleButton(playButton, new Color(34, 139, 34), Color.WHITE);
-    styleButton(quitButton, new Color(178, 34, 34), Color.WHITE);
-    styleButton(helpButton, new Color(70, 130, 180), Color.WHITE);
-    styleButton(infoButton, new Color(128, 128, 128), Color.WHITE);
+    styleButton(playButton, new Color(34, 139, 34));
+    styleButton(quitButton, new Color(178, 34, 34));
+    styleButton(helpButton, new Color(70, 130, 180));
+    styleButton(infoButton, new Color(128, 128, 128));
 
     setLayout(null);
 
@@ -49,11 +49,11 @@ public class OptionsComponent extends JComponent implements ActionListener {
     add(quitButton);
   }
 
-  private void styleButton(JButton button, Color bg, Color fg) {
+  private void styleButton(JButton button, Color bg) {
     button.setFont(new Font("Montserrat", Font.BOLD, 30));
     button.setFocusPainted(false);
     button.setBackground(bg);
-    button.setForeground(fg);
+    button.setForeground(Color.WHITE);
     button.setOpaque(true);
     button.setBorderPainted(false);
     button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -126,20 +126,20 @@ public class OptionsComponent extends JComponent implements ActionListener {
       // Exit button: close the application
       System.exit(0);
     } else if (triggered == playButton) {
-      // Play button: transition from menu to the game state
-      OrderFlow.currentState = OrderFlow.STATE.GAME;
-      OrderFlow.menuFrame.dispose();
-      OrderFlow.gameReset();
+      OrderFlow.Frame.dispose();
+      OrderFlow.gameStart();
     } else if (triggered == helpButton) {
       // Display help info in a dialog box
       JOptionPane.showMessageDialog(
               this,
-              "The goal of blackjack is to get as close to 21 as possible without going over.\n" +
-                      "Face cards are worth 10. Aces are 1 or 11, whichever benefits you.\n" +
-                      "You start with two cards, and one of the dealer's cards is hidden until the end.\n" +
-                      "Click 'Hit' to draw another card, or 'Stand' to hold your total.\n" +
-                      "If you exceed 21, you bust and lose immediately.\n" +
-                      "A starting 21 (Ace & 10-value card) is a natural blackjack!",
+              """
+                      The goal of blackjack is to get as close to 21 as possible without going over.
+                      Face cards are worth 10. Aces are 1 or 11, whichever benefits you.
+                      You start with two cards, and one of the dealer's cards is hidden until the end.
+                      Click 'Hit' to draw another card, or 'Stand' to hold your total.
+                      If you exceed 21, you bust and lose immediately.
+                      A starting 21 (Ace & 10-value card) is a natural blackjack!
+                      """,
               "BLACKJACK HELP",
               JOptionPane.INFORMATION_MESSAGE
       );
@@ -147,9 +147,11 @@ public class OptionsComponent extends JComponent implements ActionListener {
       // Display info about the program
       JOptionPane.showMessageDialog(
               this,
-              "This project is the semester project for CMPSC 221\n" +
-                      "by Ethan Kuo, Lakshay Kalra, and Chukwubikem David Dara.\n" +
-                      "⚠DISCLAIMER: Gambling is HARAM, Stay Safe!",
+              """
+                      This project is the semester project for CMPSC 221
+                      by Ethan Kuo, Lakshay Kalra, and Chukwubikem David Dara.
+                      ⚠DISCLAIMER: Gambling is HARAM, Stay Safe!
+                      """,
               "INFORMATION",
               JOptionPane.INFORMATION_MESSAGE
       );

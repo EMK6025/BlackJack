@@ -52,15 +52,13 @@ public class Card {
     BufferedImage reverseSide = ImageIO.read(new File("images/backsideOfACard.jpg"));
 
     // Dimensions of the sprite sheet (entire image)
-    int sheetWidth = 950;
-    int sheetHeight = 392;
+    int cardW = 950 / 13;
+    int cardH = 392 / 4;
 
     // Slice the sprite sheet into a 4x13 array of card images
     BufferedImage[][] cardFaces = new BufferedImage[4][13];
     for (int suit = 0; suit < 4; suit++) {
       for (int rank = 0; rank < 13; rank++) {
-        int cardW = sheetWidth / 13;
-        int cardH = sheetHeight / 4;
         cardFaces[suit][rank] = fullDeck.getSubimage(rank * cardW, suit * cardH, cardW, cardH);
       }
     }

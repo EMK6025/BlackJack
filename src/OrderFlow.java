@@ -1,59 +1,66 @@
-import javax.swing.JFrame;
+import javax.swing.*;
+import java.awt.*;
 
 public class OrderFlow {
 
-  public static JFrame menuFrame = new JFrame(); // Frame for the initial menu
-  public static JFrame gameFrame = new JFrame(); // Frame for the actual game
+  public static JFrame Frame = new JFrame(); // Frame for the initial menu
+  public static JFrame gameFrame = new JFrame(); // Frame for the game menu
 
-  private static int playerScore = 0;
-  private static int dealerScore = 0;
   public static int currentBet = 0;
   public static int currentBalance = 1000;
-
-  public static AllActions newGame = new AllActions(gameFrame); // Controls the blackjack game
-
-  public static enum STATE {
-    MENU,
-    GAME
-  };
-
-  public static STATE currentState = STATE.MENU;
+  public static GameDisplay primaryVisuals;
 
   public static void main(String[] args) throws InterruptedException {
-    if (currentState == STATE.MENU) {
-      openMenu();
-    }
+    SwingUtilities.invokeLater(OrderFlow::openMenu);
   }
 
   public static void openMenu() {
-    menuFrame.setTitle("BLACKJACK!");
-    menuFrame.setSize(1130, 665);
-    menuFrame.setLocationRelativeTo(null);
-    menuFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    menuFrame.setResizable(false);
+    Frame.setTitle("BLACKJACK!");
+    Frame.setSize(1130, 665);
+    Frame.setLocationRelativeTo(null);
+    Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    Frame.setResizable(false);
 
-    OptionsComponent beginningComponent = new OptionsComponent();
-    menuFrame.add(beginningComponent);
-    menuFrame.setVisible(true);
+    MenuDisplay beginningComponent = new MenuDisplay();
+    Frame.add(beginningComponent);
+    Frame.setVisible(true);
   }
 
   public static void gameReset() {
-    if (newGame.outcome == 1) {
+    if (GameDisplay.outcome == 0) {
       // Dealer wins
-      dealerScore++;
-    } else if (newGame.outcome == 0) {
+      GameDisplay.dealerWinsCount++;
+    } else if (GameDisplay.outcome == 1) {
       // Player wins
-      playerScore++;
+      GameDisplay.playerWinsCount++;
       currentBalance += currentBet * 2;
     } else {
       // Push
       currentBalance += currentBet;
     }
     currentBet = 0;
-    newGame.primaryVisuals.updateDisplay(currentBalance, playerScore, dealerScore - 1, AllActions.cardFaceDown);
-    gameFrame.getContentPane().removeAll();
-    newGame = new AllActions(gameFrame);
-    newGame.buildGameInterface(); // Updated from formGame() to buildGameInterface()
-
+    AllActions.dealerCards.clear();
+    AllActions.playerCards.clear();
+    primaryVisuals.repaint();
   }
+
+  public static void gameStart() {
+    primaryVisuals = new GameDisplay();
+    primaryVisuals.setPreferredSize(new Dimension(1130, 665));
+    primaryVisuals.addMouseListener(primaryVisuals);
+    gameFrame.setLayout(new BorderLayout());
+    gameFrame.add(primaryVisuals, BorderLayout.CENTER);
+
+    gameFrame.setTitle("BLACKJACK!");
+    gameFrame.setSize(1130, 665);
+    gameFrame.setLocationRelativeTo(null);
+    gameFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    gameFrame.setResizable(false);
+
+    GameDisplay.cardHidden = true;
+    GameDisplay.outcome = -1;
+
+    gameFrame.setVisible(true);  // Show the frame
+  }
+
 }

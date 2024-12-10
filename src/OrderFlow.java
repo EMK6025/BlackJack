@@ -28,14 +28,14 @@ public class OrderFlow {
 
   public static void gameReset() {
     if (GameDisplay.outcome == 0) {
-      // Dealer wins
+
       GameDisplay.dealerWinsCount++;
     } else if (GameDisplay.outcome == 1) {
-      // Player wins
+
       GameDisplay.playerWinsCount++;
       currentBalance += currentBet * 2;
     } else {
-      // Push
+      
       currentBalance += currentBet;
     }
     currentBet = 0;

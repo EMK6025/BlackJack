@@ -22,7 +22,7 @@ public class AllActions {
     Timer timer = new Timer(750, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
-        if (i++ < 4) { // Continue until 4 iterations
+        if (i++ < 4) {
           if (i % 2 == 1) {
             appendCard(dealerCards); // Add to dealer's cards
           } else {
@@ -184,13 +184,13 @@ public class AllActions {
           appendCard(dealerCards);
           if (evaluateHand(dealerCards)) {
             OrderFlow.gameFrame.repaint();
-            ((Timer) e.getSource()).stop();  // Stop the timer once the hand is evaluated
-            determineOutcome();  // Proceed to determine the outcome
+            ((Timer) e.getSource()).stop();
+            determineOutcome();
           }
           OrderFlow.gameFrame.repaint();
         } else {
-          ((Timer) e.getSource()).stop();  // Stop the timer if the dealer's hand is 17 or higher
-          determineOutcome();  // Proceed to determine the outcome
+          ((Timer) e.getSource()).stop();
+          determineOutcome();
         }
       }
     });

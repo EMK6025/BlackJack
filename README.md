@@ -1,1 +1,3 @@
-### This is the GitHub Repo for Group BlackJack's CompSci 221 Project
+This is the github repo for our CMPSC 221 Project
+
+Ethan Kuo, Lukshay Kalra, and Chukwubikem David Dara
